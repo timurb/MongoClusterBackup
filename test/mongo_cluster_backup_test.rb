@@ -5,8 +5,9 @@ $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 
 require 'test/unit'
 require 'mongo_cluster_backup'
-require 'ec2_proxy'
+require 'dummy_backup_runner'
 
+#  helpers go here
 module Mongo
   class MongosConnection
     def initialize(mongos)
@@ -36,8 +37,11 @@ module Mongo
   end
 
   class Connection
+
+    attr_reader :host_to_try
+
     def setup(*args)
-      @args=[*args]
+      @args=args
       @locked = false
     end
 
@@ -51,27 +55,38 @@ module Mongo
   end
 
   class ReplSetConnection
+
+    def initialize(*args)
+      @args=args
+    end
+
     def passives
-      @args[0]
+      [ @args[1] ]
     end
   end
 end
+# helpers finished
 
-class MongoEC2ClusterBackupTest < Test::Unit::TestCase
+
+# actual tests
+class MongoClusterBackupTest < Test::Unit::TestCase
 
   MONGOS={
     :host => 'localhost',
     :port => 27017,
+    :runner => MongoBackup::DummyBackupRunner,
   }
+
+  DEFAULT_CONFIG_PORT=38019
+
+  BACKUPS=[["repl1b", 27018], ["repl2b", 27018], ["repl3b", 27018], [ MONGOS[:host], DEFAULT_CONFIG_PORT ]]
 
   def setup
     @backup=MongoBackup::Cluster.new( MONGOS )
     @backup.run
-
-    @ec2=EC2Proxy.new
   end
 
   def test_nodes_backupped
-    @backup.nodes.each { |node| assert_true @ec2.snapshots.include?(node) }
+    assert_equal BACKUPS, @backup.nodes.map{|node| node.host_to_try}
   end
 end

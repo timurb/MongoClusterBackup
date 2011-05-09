@@ -1,8 +1,7 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
 
 require 'rubygems'
 require 'core_ext/mongo'
+require 'abstract_backup_runner'
 
 module MongoBackup
   class Cluster
@@ -12,6 +11,9 @@ module MongoBackup
 
     def initialize(opts={})
       @opts = {
+        :runner => AbstractBackupRunner,
+        :config_port => 38019,
+        :sleep_period => 5,
       }.merge(opts)
 
 
@@ -21,19 +23,20 @@ module MongoBackup
         :port =>@opts[:port],
       })
 
-      @shards = @mongos.shards.map{ |shard|
+      @shards = @mongos.shards.map{ |shard|       # map{}, not each{} here!!
         replica = Mongo::ReplSetConnection.new_from_string( shard["host"] )
         replica.passives.map do |host|
-          Mongo::Connection.new(host)
-        end
+          Mongo::Connection.new( *host )
+        end                                       # map{}, not each{} here!!
       }.flatten
+
+      @config = Mongo::Connection.new( @opts[:host], @opts[:config_port] )
     end
 
     def run
       stop_balancer do
         lock_shards do
-          backup_shards
-          config.backup
+          backup_nodes( @shards | [ @config ] )
           wait_backup
         end
       end
@@ -54,6 +57,19 @@ module MongoBackup
         yield
       ensure
         @shards.each { |shard|  shard.unlock! }
+      end
+    end
+
+    def backup_nodes( nodes )
+      @runner = @opts[:runner].new( nodes )
+      @runner.run
+      @nodes = @runner.backups
+    end
+
+    def wait_backup
+      while !@runner.waiting.empty?
+        sleep @opts[:sleep_period]
+        @runner.update_waiting
       end
     end
   end
