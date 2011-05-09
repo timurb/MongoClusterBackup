@@ -2,7 +2,7 @@
 # and open the template in the editor.
 
 require 'rubygems'
-require 'mongos_connection'
+require 'core_ext/mongo'
 
 module MongoBackup
   class Cluster
@@ -13,15 +13,17 @@ module MongoBackup
 
     def initialize(opts={})
       @opts = {
-        :mongos_proxy => Mongo::MongosConnection,
       }.merge(opts)
 
 
 
-      @mongos = @opts[:mongos_proxy].new( {
+      @mongos = Mongo::MongosConnection.new( {
         :host=>@opts[:host],
         :port =>@opts[:port],
       })
+
+      @shards = @mongos.shards
+      p @shards
     end
 
     def run
