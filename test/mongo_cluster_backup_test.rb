@@ -4,7 +4,7 @@
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 
 require 'test/unit'
-require 'mongo_ec2_cluster_backup'
+require 'mongo_cluster_backup'
 require 'ec2_proxy'
 
 module Mongo
