@@ -21,7 +21,7 @@ class AbstractBackupRunnerTest < Test::Unit::TestCase
     @runner.run(:wait => false)
     assert_equal NODES, @runner.backups
     assert_equal [], @runner.waiting
-    @runner.wait
+    @runner.update_waiting
     assert_equal [], @runner.waiting
   end
 
@@ -29,7 +29,7 @@ class AbstractBackupRunnerTest < Test::Unit::TestCase
     @runner.run(:wait => true)
     assert_equal NODES, @runner.backups
     assert_equal NODES, @runner.waiting
-    @runner.wait
+    @runner.update_waiting
     assert_equal [], @runner.waiting
   end
 end

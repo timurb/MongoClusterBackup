@@ -6,7 +6,7 @@ module MongoBackup
     def backup_node(node)
       node
     end
-    def wait
+    def update_waiting
       @waiting = []
     end
   end

@@ -26,7 +26,7 @@ module MongoBackup
       end
     end
 
-    def wait
+    def update_waiting
       raise "Procedure not implemented"
     end
 
