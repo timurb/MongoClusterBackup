@@ -2,7 +2,7 @@
 # and open the template in the editor.
 
 require 'rubygems'
-require 'mongo'
+require 'mongos_connection'
 
 module MongoBackup
   class Cluster
@@ -13,7 +13,7 @@ module MongoBackup
 
     def initialize(opts={})
       @opts = {
-        :mongos_proxy => MongoS,
+        :mongos_proxy => Mongo::MongosConnection,
       }.merge(opts)
 
 
@@ -50,20 +50,6 @@ module MongoBackup
       ensure
         shards.each { |shard|  shard.unlock! }
       end
-    end
-  end
-
-  class MongoS < ::Mongo::Connection
-    def stop_balancer
-      self['config']['settings'].update( { :_id => "balancer" }, { :stopped => true } )
-    end
-
-    def start_balancer
-      self['config']['settings'].update( { :_id => "balancer" }, { :stopped => false } )
-    end
-
-    def shards
-      self['admin'].command( { :listShards => 1} )["shards"]
     end
   end
 
