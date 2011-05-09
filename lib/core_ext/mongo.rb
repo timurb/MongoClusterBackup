@@ -27,12 +27,12 @@ module Mongo
     alias :unsafe_unlock! :unlock!
 
     def lock!(*args)
-      unsafe_lock!(*args) unless self.locked?
+      unsafe_lock!(*args) unless self.locked? # op hangs when locking already locked node
     end
 
     def unlock!(*args)
       begin
-        unsafe_unlock!(*args)
+        unsafe_unlock!(*args)   # the failure in unlock op should not crash the whole program
       rescue => e
         e
       end
@@ -40,7 +40,6 @@ module Mongo
   end
 
   class ReplSetConnection
-
     def passives
       @passives ||= self['local']['system.replset'].find_one()['members'].reject do |member|
         member["priority"] != 0

@@ -34,6 +34,27 @@ module Mongo
         ]
     end
   end
+
+  class Connection
+    def setup(*args)
+      @args=[*args]
+      @locked = false
+    end
+
+    def lock!
+      @locked = true
+    end
+
+    def unlock!
+      @locked = false
+    end
+  end
+
+  class ReplSetConnection
+    def passives
+      @args[0]
+    end
+  end
 end
 
 class MongoEC2ClusterBackupTest < Test::Unit::TestCase

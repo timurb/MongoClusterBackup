@@ -6,7 +6,6 @@ require 'core_ext/mongo'
 
 module MongoBackup
   class Cluster
-    attr_reader :shards
 
     #  nodes to backup
     attr_reader :nodes
@@ -22,8 +21,12 @@ module MongoBackup
         :port =>@opts[:port],
       })
 
-      @shards = @mongos.shards
-      p @shards
+      @shards = @mongos.shards.map{ |shard|
+        replica = Mongo::ReplSetConnection.new_from_string( shard["host"] )
+        replica.passives.map do |host|
+          Mongo::Connection.new(host)
+        end
+      }.flatten
     end
 
     def run
@@ -47,10 +50,10 @@ module MongoBackup
 
     def lock_shards
       begin
-        shards.each { |shard|  shard.lock! }
+        @shards.each { |shard|  shard.lock! }
         yield
       ensure
-        shards.each { |shard|  shard.unlock! }
+        @shards.each { |shard|  shard.unlock! }
       end
     end
   end
