@@ -39,4 +39,38 @@ module Mongo
     end
   end
 
+  class ReplSetConnection
+
+    def passives
+      @passives ||= self['local']['system.replset'].find_one()['members'].reject do |member|
+        member["priority"] != 0
+      end.map{ |m| m["host"] }
+    end
+
+    class << self
+      def new_from_string(*args)
+        replica = split_names( args.delete_at(0) )
+        args = replica + args
+        self.new(*args)
+      end
+
+      def split_names(replica)
+        names = replica.match( /(([^\/]*)\/)?(([^:,]*)(:(\d+))?)(,([^:,]*)(:(\d+))?)?(,([^:,]*)(:(\d+))?)?(,([^:,]*)(:(\d+))?)?(,([^:,]*)(:(\d+))?)?(,([^:,]*)(:(\d+))?)?(,([^:,]*)(:(\d+))?)?/ ).to_a
+
+        replset = []
+
+        ((names.size+1)/4).times do |i|
+          next if i==0
+          host = names[i*4]
+          port = names[i*4+2]
+          port = port.to_i unless port.nil?
+          next if host.nil? || host.empty?
+
+          replset << [ host, port ]
+        end
+
+        replset << { :rs_name => names[2] }
+      end
+    end
+  end
 end
