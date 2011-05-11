@@ -10,9 +10,9 @@ require 'dummy_backup_runner'
 #  helpers go here
 module Mongo
   class MongosConnection
-    def initialize(mongos)
-      @host=mongos[:host]
-      @port=mongos[:port]
+    def initialize(host,port,opts={})
+      @host=host
+      @port=port
       @balancer=:started
     end
 

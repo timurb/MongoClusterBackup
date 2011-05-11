@@ -17,11 +17,7 @@ module MongoBackup
       }.merge(opts)
 
 
-
-      @mongos = Mongo::MongosConnection.new( {
-        :host=>@opts[:host],
-        :port =>@opts[:port],
-      })
+      @mongos = Mongo::MongosConnection.new( @opts[:host], @opts[:port])
 
       @shards = @mongos.shards.map{ |shard|       # map{}, not each{} here!!
         replica = Mongo::ReplSetConnection.new_from_string( shard["host"] )
