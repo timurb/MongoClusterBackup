@@ -78,8 +78,9 @@ class MongoClusterBackupTest < Test::Unit::TestCase
   }
 
   DEFAULT_CONFIG_PORT=38019
+  BACKUP_ID='Backup ID'
 
-  BACKUPS=[ ["repl1b", 27018,"shard1"], ["repl2b", 27018, "shard2"], ["repl3b", 27018, "shard3"], [ MONGOS[:host], DEFAULT_CONFIG_PORT, 'CONFIG'] ]
+  BACKUPS=[ ["repl1b", 27018,"shard1",BACKUP_ID], ["repl2b", 27018, "shard2",BACKUP_ID], ["repl3b", 27018, "shard3",BACKUP_ID], [ MONGOS[:host], DEFAULT_CONFIG_PORT, 'CONFIG',BACKUP_ID] ]
 
   def setup
     @backup=MongoBackup::Cluster.new( MONGOS )
