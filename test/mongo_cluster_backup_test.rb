@@ -61,7 +61,7 @@ module Mongo
     end
 
     def passives
-      [ @args[1] ]
+      [ @args[1].join(":") ]
     end
   end
 end

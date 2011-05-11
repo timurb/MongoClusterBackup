@@ -22,6 +22,7 @@ module MongoBackup
       @shards = @mongos.shards.map{ |shard|       # map{}, not each{} here!!
         replica = Mongo::ReplSetConnection.new_from_string( shard["host"] )
         replica.passives.map do |host|
+          host = host.split(':')
           Mongo::SafeConnection.new( host[0], host[1], { :shard_name => shard["_id"] } )
         end                                       # map{}, not each{} here!!
       }.flatten
