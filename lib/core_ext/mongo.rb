@@ -22,7 +22,15 @@ module Mongo
 
 
   #     patching the Connection object's lock! and unlock! methods to be safe to run
-  class Connection
+  class SafeConnection < ::Mongo::Connection
+
+    attr_reader :shard_name
+
+    def initialize(*args)
+      @shard_name = args.last[:shard_name]  if args.last.is_a?( Hash )
+      super(*args)
+    end
+
     alias :unsafe_lock! :lock!
     alias :unsafe_unlock! :unlock!
 

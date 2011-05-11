@@ -8,7 +8,7 @@ require 'core_ext/mongo'
 
 # => stub class for tests
 module Mongo
-  class TestConnection < Connection
+  class TestConnection < SafeConnection
     attr_accessor :lock_was_run    
     def initialize
       @lock_was_run = false

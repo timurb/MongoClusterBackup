@@ -36,7 +36,7 @@ module Mongo
     end
   end
 
-  class Connection
+  class SafeConnection
 
     attr_reader :host_to_try
 
@@ -79,7 +79,7 @@ class MongoClusterBackupTest < Test::Unit::TestCase
 
   DEFAULT_CONFIG_PORT=38019
 
-  BACKUPS=[["repl1b", 27018], ["repl2b", 27018], ["repl3b", 27018], [ MONGOS[:host], DEFAULT_CONFIG_PORT ]]
+  BACKUPS=[ ["repl1b", 27018,"shard1"], ["repl2b", 27018, "shard2"], ["repl3b", 27018, "shard3"], [ MONGOS[:host], DEFAULT_CONFIG_PORT, 'CONFIG'] ]
 
   def setup
     @backup=MongoBackup::Cluster.new( MONGOS )
@@ -87,6 +87,6 @@ class MongoClusterBackupTest < Test::Unit::TestCase
   end
 
   def test_nodes_backupped
-    assert_equal BACKUPS, @backup.nodes.map{|node| node.host_to_try}
+    assert_equal BACKUPS, @backup.nodes.map{|node|  node.host_to_try + [node.shard_name] }
   end
 end
