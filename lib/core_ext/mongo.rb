@@ -27,7 +27,7 @@ module Mongo
     attr_reader :shard_name
 
     def initialize(*args)
-      @shard_name = args.last[:shard_name]  if args.last.is_a?( Hash )
+      @shard_name = args.last.delete(:shard_name)  if args.last.is_a?( Hash )
       super(*args)
     end
 
