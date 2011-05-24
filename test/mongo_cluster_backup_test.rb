@@ -71,14 +71,15 @@ end
 # actual tests
 class MongoClusterBackupTest < Test::Unit::TestCase
 
+  DEFAULT_CONFIG_PORT=38019
+  BACKUP_ID='Backup ID'
+
   MONGOS={
     :host => 'localhost',
     :port => 27017,
     :runner => MongoBackup::DummyBackupRunner,
+    :backup_id => BACKUP_ID,
   }
-
-  DEFAULT_CONFIG_PORT=38019
-  BACKUP_ID='Backup ID'
 
   BACKUPS=[ ["repl1b", 27018,"shard1",BACKUP_ID], ["repl2b", 27018, "shard2",BACKUP_ID], ["repl3b", 27018, "shard3",BACKUP_ID], [ MONGOS[:host], DEFAULT_CONFIG_PORT, 'CONFIG',BACKUP_ID] ]
 
@@ -88,6 +89,6 @@ class MongoClusterBackupTest < Test::Unit::TestCase
   end
 
   def test_nodes_backupped
-    assert_equal BACKUPS, @backup.nodes.map{|node|  node.host_to_try + [node.shard_name] }
+    assert_equal BACKUPS, @backup.nodes.map{|node|   node, id  = *node; node.host_to_try << node.shard_name << id }
   end
 end

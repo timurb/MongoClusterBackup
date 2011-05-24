@@ -19,7 +19,7 @@ module MongoBackup
       opts = @opts.merge(opts)  # local options only
       
       @nodes.each do |node|
-        if backup_node(node)
+        if node=backup_node(node)
           @backups << node
           @waiting << node if opts[:wait]
         end
