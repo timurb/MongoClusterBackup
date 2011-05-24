@@ -58,7 +58,7 @@ module MongoBackup
     end
 
     def backup_nodes( nodes )
-      @runner = @opts[:runner].new( nodes, :backup_id => @opts[:backup_id] )
+      @runner = @opts[:runner].new( nodes, @opts )
       @runner.run
       @nodes = @runner.backups
     end
@@ -68,6 +68,10 @@ module MongoBackup
         sleep @opts[:sleep_period]
         @runner.update_waiting
       end
+    end
+
+    def backup_id
+      @runner.backup_id  if @runner
     end
   end
 

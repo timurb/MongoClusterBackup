@@ -4,11 +4,14 @@ module MongoBackup
 
     attr_reader :backups
     attr_reader :waiting
+    attr_reader :backup_id
 
     def initialize(nodes, opts={})
       @opts = {
         :wait => false,
       }.merge(opts)
+
+      @backup_id = @opts.delete(:backup_id) || Time.now.to_i.to_s
 
       @nodes = nodes
       @backups = []

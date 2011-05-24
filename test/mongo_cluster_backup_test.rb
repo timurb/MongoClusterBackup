@@ -81,7 +81,7 @@ class MongoClusterBackupTest < Test::Unit::TestCase
     :backup_id => BACKUP_ID,
   }
 
-  BACKUPS=[ ["repl1b", 27018,"shard1",BACKUP_ID], ["repl2b", 27018, "shard2",BACKUP_ID], ["repl3b", 27018, "shard3",BACKUP_ID], [ MONGOS[:host], DEFAULT_CONFIG_PORT, 'CONFIG',BACKUP_ID] ]
+  BACKUPS=[ ["repl1b", 27018,"shard1"], ["repl2b", 27018, "shard2"], ["repl3b", 27018, "shard3"], [ MONGOS[:host], DEFAULT_CONFIG_PORT, 'CONFIG'] ]
 
   def setup
     @backup=MongoBackup::Cluster.new( MONGOS )
@@ -89,6 +89,7 @@ class MongoClusterBackupTest < Test::Unit::TestCase
   end
 
   def test_nodes_backupped
-    assert_equal BACKUPS, @backup.nodes.map{|node|   node, id  = *node; node.host_to_try << node.shard_name << id }
+    assert_equal BACKUP_ID, @backup.backup_id
+    assert_equal BACKUPS, @backup.nodes.map{|node|   node.host_to_try << node.shard_name }
   end
 end
