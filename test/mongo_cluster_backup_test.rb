@@ -79,6 +79,7 @@ class MongoClusterBackupTest < Test::Unit::TestCase
     :port => 27017,
     :runner => MongoBackup::DummyBackupRunner,
     :backup_id => BACKUP_ID,
+    :quiet=>true,
   }
 
   BACKUPS=[ ["repl1b", 27018,"shard1"], ["repl2b", 27018, "shard2"], ["repl3b", 27018, "shard3"], [ MONGOS[:host], DEFAULT_CONFIG_PORT, 'CONFIG'] ]
