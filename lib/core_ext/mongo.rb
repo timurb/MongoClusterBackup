@@ -57,8 +57,9 @@ module Mongo
     class << self
       def new_from_string(*args)
         replica = split_names( args.delete_at(0) )
-        args = replica + args
-        self.new(*args)
+        replica[-1].merge(args)   if args.is_a?(Hash)
+
+        self.new(*replica)
       end
 
       def split_names(replica)
