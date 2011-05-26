@@ -4,7 +4,7 @@
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 
 require 'test/unit'
-require 'core_ext/mongo'
+require 'mongo_cluster_backup/core_ext/mongo'
 
 # => stub class for tests
 module Mongo

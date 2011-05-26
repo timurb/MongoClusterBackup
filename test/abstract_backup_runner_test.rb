@@ -2,7 +2,7 @@
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 
 require 'test/unit'
-require 'dummy_backup_runner'
+require 'mongo_cluster_backup/runner/dummy_backup_runner'
 
 class AbstractBackupRunnerTest < Test::Unit::TestCase
 

@@ -1,8 +1,8 @@
 
 require 'rubygems'
-require 'core_ext/mongo'
-require 'abstract_backup_runner'
 require 'logger'
+require 'mongo_cluster_backup/core_ext/mongo'
+require 'mongo_cluster_backup/runner/abstract_backup_runner'
 
 module MongoBackup
   class Cluster
