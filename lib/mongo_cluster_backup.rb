@@ -56,7 +56,7 @@ module MongoBackup
         yield
       ensure
         @mongos.start_balancer
-        @logger.info('Balancer stopped')
+        @logger.info('Balancer started')
       end
     end
 
