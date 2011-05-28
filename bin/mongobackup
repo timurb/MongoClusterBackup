@@ -13,8 +13,14 @@ optparse = OptionParser.new do |opts|
 
   opts.banner = "Usage: mongobackup [options] HOST [PORT]"
 
-  opts.separator "Specific options:"
+
   opts.separator ""
+  opts.separator "Common options:"
+  opts.separator "    HOST [PORT]\t\t\tA mongos router to connect to"
+  opts.separator ""
+
+
+  opts.separator "Specific options:"
 
   opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
    options[:verbose] = v
@@ -43,6 +49,8 @@ optparse = OptionParser.new do |opts|
   opts.on("-d", "--backup-dir DIR", "A dir to place backups into","(MongoBackupRunner only)","Default: current dir") do |backup_dir|
     options[:backup_dir] = backup_dir
   end
+
+  opts.separator ""
 
   opts.on_tail("-h", "--help", "Show this message") do
    puts opts

@@ -1,0 +1,78 @@
+== MongoShardBackup
+
+A tool to backup sharded mongo cluster.
+This is quite untested yet. Use at own risk.
+
+Requires mongo gem installed.
+A standard MongoDump backup runner requires mongodump program to be installed.
+
+=== Installation
+
+  git clone https://timurbatyrshin@github.com/timurbatyrshin/MongoClusterBackup.git
+  pushd MongoShardBackup
+  rake gem
+  gem install pkg/mongo_shard_backup-*
+  popd
+
+Find the installed executable in $GEM_HOME/bin
+
+=== Usage
+
+Usage: mongobackup [options] HOST [PORT]
+Common options:
+    HOST [PORT]			A mongos router to connect to
+
+Specific options:
+    -v, --[no-]verbose               Run verbosely
+    -q, --[no-]quiet                 Run quietly
+    -l, --logfile LOGFILE            File to put log messages
+                                     Default: STDERR
+    -c, --config-port PORT           Port at which config server runs
+                                     Default: 38019
+    -s, --sleep-time TIME            Time between checks when using background backup
+    -R, --backup-runner RUNNER       Use specified backup runner
+    -d, --backup-dir DIR             A dir to place backups into
+                                     (MongoBackupRunner only)
+                                     Default: current dir
+    -h, --help                       Show this message
+        --version                    Show version  mongobackup [OPTION] mongos.address
+
+
+Here HOST:PORT is the address of mongos router. 
+This host should also hold one of config servers on port 27019.
+PORT defaults to 27017.
+Each replica in the shard should have on of the nodes with priority=0 set.
+
+
+=== Procedure
+
+The script connects to mongos router and obtains the list of used shards.
+Then it stops the balancer, finds all passive nodes and creates snapshots
+of those. After that it creates a snapshot of the config server.
+
+Standard MongoDump runner uses common mongodump command to dump all data from DB to
+timestamped dir under specified backup path. Each shard server into its own dir.
+
+
+=== Backups restoration
+
+In general you should create the Mongo cluster matching the one which was backed up.
+Then load dumps into according mongo instances. The way to load depends on used backup
+runner. MongoDump backup runner produces usual mongo dumps to load them using
+common mongorestore command.
+
+
+=== Backups rotation
+
+No backups rotation is done yet (TODO)
+
+
+=== Adding your own runners
+
+If you want to add your own backup procedure MongoBackup::BackupRunner::AbstractRunner
+and redefine procedures backup_node and update_waiting 
+
+Mongo::Connection instance of node to backup is passed to backup_node().
+
+update_waiting is intended for running some kind of parallel backups (EC2 snapshotting
+etc) and should clean the already backupped nodes from @waiting var.

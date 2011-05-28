@@ -9,18 +9,19 @@ require 'rake/clean'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'rake/testtask'
+require 'lib/mongo_cluster_backup/version'
 
 spec = Gem::Specification.new do |s|
-  s.name = 'MongoShardBackup2'
-  s.version = '0.0.1'
+  s.name = 'MongoClusterBackup'
+  s.version = MongoBackup::VERSION
   s.has_rdoc = true
-  s.extra_rdoc_files = ['README', 'LICENSE']
-  s.summary = 'Your summary here'
+  s.extra_rdoc_files = ['README.rdoc', 'LICENSE']
+  s.summary = 'A tool to backup sharded mongo cluster'
   s.description = s.summary
-  s.author = ''
-  s.email = ''
-  # s.executables = ['your_executable_here']
-  s.files = %w(LICENSE README Rakefile) + Dir.glob("{bin,lib,spec}/**/*")
+  s.author = 'Timur Batyrshin'
+  s.email = 'timur.batyrshin@flathost.ru'
+  s.executables = ['mongobackup']
+  s.files = %w(LICENSE README.rdoc Rakefile) + Dir.glob("{bin,lib,spec}/**/*")
   s.require_path = "lib"
   s.bindir = "bin"
   s.add_dependency('mongo')
@@ -33,10 +34,10 @@ Rake::GemPackageTask.new(spec) do |p|
 end
 
 Rake::RDocTask.new do |rdoc|
-  files =['README', 'LICENSE', 'lib/**/*.rb']
+  files =['README.rdoc', 'LICENSE', 'lib/**/*.rb']
   rdoc.rdoc_files.add(files)
-  rdoc.main = "README" # page to start on
-  rdoc.title = "MongoShardBackup2 Docs"
+  rdoc.main = "README.rdoc" # page to start on
+  rdoc.title = "MongoClusterBackup Docs"
   rdoc.rdoc_dir = 'doc/rdoc' # rdoc output folder
   rdoc.options << '--line-numbers'
 end
