@@ -5,7 +5,7 @@ $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 
 require 'test/unit'
 require 'mongo_cluster_backup'
-require 'mongo_cluster_backup/runner/dummy_backup_runner'
+require 'mongo_cluster_backup/runner/dummy_runner'
 
 #  helpers go here
 module Mongo

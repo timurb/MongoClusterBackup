@@ -2,7 +2,7 @@
 require 'rubygems'
 require 'logger'
 require 'mongo_cluster_backup/core_ext/mongo'
-require 'mongo_cluster_backup/runner/abstract_backup_runner'
+require 'mongo_cluster_backup/runner/abstract_runner'
 
 module MongoBackup
   class Cluster

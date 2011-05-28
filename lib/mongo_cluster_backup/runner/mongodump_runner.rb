@@ -1,5 +1,5 @@
 
-require 'mongo_cluster_backup/runner/abstract_backup_runner'
+require 'mongo_cluster_backup/runner/abstract_runner'
 
 module MongoBackup
   module BackupRunner
