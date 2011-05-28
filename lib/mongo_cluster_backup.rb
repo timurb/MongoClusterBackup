@@ -20,7 +20,7 @@ module MongoBackup
       }.merge(opts)
 
       @logger = Logger.new( @opts[:logfile] )
-      if @opts.delete(:verbose)
+      if @opts[:verbose]
         @logger.level = Logger::DEBUG
       elsif @opts.delete(:quiet)
         @logger.level = Logger::WARN
