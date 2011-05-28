@@ -12,7 +12,7 @@ module MongoBackup
 
     def initialize(opts={})
       @opts = {
-        :runner => AbstractBackupRunner,
+        :runner => BackupRunner::AbstractRunner,
         :config_port => 38019,
         :sleep_period => 5,
         :logfile => STDOUT,

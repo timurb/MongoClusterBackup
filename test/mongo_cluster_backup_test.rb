@@ -77,7 +77,7 @@ class MongoClusterBackupTest < Test::Unit::TestCase
   MONGOS={
     :host => 'localhost',
     :port => 27017,
-    :runner => MongoBackup::DummyBackupRunner,
+    :runner => MongoBackup::BackupRunner::DummyRunner,
     :backup_id => BACKUP_ID,
     :quiet=>true,
   }

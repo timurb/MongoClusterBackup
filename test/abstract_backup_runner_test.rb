@@ -9,7 +9,7 @@ class AbstractBackupRunnerTest < Test::Unit::TestCase
   NODES = [1,2,3]
 
   def setup
-    @runner = MongoBackup::DummyBackupRunner.new(NODES)
+    @runner = MongoBackup::BackupRunner::DummyRunner.new(NODES)
   end
 
   def test_backups_making
