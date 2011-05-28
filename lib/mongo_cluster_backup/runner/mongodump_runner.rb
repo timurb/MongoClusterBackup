@@ -15,7 +15,7 @@ module MongoBackup
       def backup_node(node)
         begin
           STDOUT.reopen(@null)   unless @opts[:verbose]
-          system( 'mongodump', '-o', File.join(@opts[:backup_path],node.shard_name), '-h', node.host, '--port', node.port.to_s )
+          system( *%W[mongodump -o #{File.join(@opts[:backup_path],node.shard_name)} -h #{node.host} --port #{node.port}] )
         ensure
           begin
             STDOUT.reopen(@stdout)  unless @opts[:verbose]
