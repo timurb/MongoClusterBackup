@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'optparse'
+require 'mongo_cluster_backup'
+require 'mongo_cluster_backup/runner/mongodump_runner'
+
+options = { :runner => MongoBackup::BackupRunner::MongoDumpRunner }
+
+optparse = OptionParser.new do |opts|
+  opts.version=MongoBackup::VERSION
+#  opts.release=1
+
+  opts.banner = "Usage: mongobackup [options] HOST [PORT]"
+
+  opts.separator "Specific options:"
+  opts.separator ""
+
+  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+   options[:verbose] = v
+  end
+
+  opts.on("-q", "--[no-]quiet", "Run quietly") do |v|
+   options[:quiet] = v
+  end
+
+  opts.on("-l", "--logfile LOGFILE", "File to put log messages", "Default: STDERR") do |logfile|
+    options[:logfile] = logfile
+  end
+
+  opts.on("-c", "--config-port PORT", Integer, "Port at which config server runs", "Default: 38019") do |port|
+    options[:config_port] = 38019
+  end
+
+  opts.on("-s", "--sleep-time TIME", Integer, "Time between checks when using background backup") do |sleep_period|
+    options[:sleep_period] = sleep_period
+  end
+
+  opts.on("-R", "--backup-runner RUNNER", MongoBackup::BackupRunner.constants, "Use specified backup runner", "     (#{MongoBackup::BackupRunner.constants.join ", "})") do |runner|
+    options[:runner] = MongoBackup::BackupRunner.const_get(runner)
+  end
+
+  opts.on("-d", "--backup-dir DIR", "A dir to place backups into","(MongoBackupRunner only)","Default: current dir") do |backup_dir|
+    options[:backup_dir] = backup_dir
+  end
+
+  opts.on_tail("-h", "--help", "Show this message") do
+   puts opts
+   exit 1
+  end
+
+  opts.on_tail("--version", "Show version") do
+    puts opts.ver
+    exit 1
+  end
+
+end
+
+optparse.parse!(ARGV)
+
+case ARGV.count
+when 0
+  puts optparse.help
+  exit 1
+when 1
+  options[:host]=ARGV[0]
+when 2
+  options[:host]=ARGV[0]
+  options[:port]=ARGV[1].to_i
+  if options[:port] == 0
+    puts "Wrong port specified: #{ARGV[1]}"
+    exit 1
+  end
+else
+  puts "Wrong number of options (see '#{optparse.program_name} -h' for help)"
+  exit 1
+end
+
+backup = MongoBackup::Cluster.new(options)
+backup.run
