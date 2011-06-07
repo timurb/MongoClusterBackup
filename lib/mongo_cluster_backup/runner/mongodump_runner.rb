@@ -1,5 +1,6 @@
 
 require 'mongo_cluster_backup/runner/abstract_runner'
+require 'yaml'
 
 module MongoBackup
   module BackupRunner
@@ -30,6 +31,13 @@ module MongoBackup
         @waiting = []
       end
 
+      def save_metadata(metadata)
+        metadata[:id] = @backup_id
+
+        File.open( File.join(@opts[:backup_path], 'METADATA.yml') ,'w' ) do |f|
+          YAML.dump(metadata, f)
+        end
+      end
     end
   end
 end
