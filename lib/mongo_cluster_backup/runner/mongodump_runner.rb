@@ -8,7 +8,8 @@ module MongoBackup
 
       def initialize(*args)
         super
-        @opts[:backup_path] = File.join( ( @opts[:backup_dir] || Dir.pwd ), @backup_id )
+        @opts[:backup_dir] ||= Dir.pwd
+        @opts[:backup_path] = File.join( @opts[:backup_dir], @backup_id )
         @stdout = STDOUT.dup
         @null = File.open('/dev/null','w')
       end
@@ -37,6 +38,14 @@ module MongoBackup
         File.open( File.join(@opts[:backup_path], 'METADATA.yml') ,'w' ) do |f|
           YAML.dump(metadata, f)
         end
+
+        symlink_latest    #  FIXME: move this to some more suitable place
+      end
+
+      def symlink_latest
+        latest = File.join( @opts[:backup_dir], "latest")
+        File.delete(latest) if File.symlink?(latest)
+        File.symlink(@opts[:backup_path], latest)
       end
     end
   end
