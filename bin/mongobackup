@@ -50,6 +50,10 @@ optparse = OptionParser.new do |opts|
     options[:backup_dir] = backup_dir
   end
 
+  opts.on("--[no-]lock", "Don't lock databases while getting dump/snapshot", "Default: locking enabled") do |l|
+    options[:lock] = l
+  end
+
   opts.separator ""
 
   opts.on_tail("-h", "--help", "Show this message") do

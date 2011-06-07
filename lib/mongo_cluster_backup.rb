@@ -20,6 +20,7 @@ module MongoBackup
         :config_port => 38019,
         :sleep_period => 5,
         :logfile => STDOUT,
+        :lock => true,
       }.merge(opts)
 
       @metadata = {
@@ -73,13 +74,17 @@ module MongoBackup
     end
 
     def lock_shards
-      begin
-        @logger.info("Locking nodes")
-        @shards.each { |shard|  shard.lock! }
+      if @opts[:lock]
+        begin
+          @logger.info("Locking nodes")
+          @shards.each { |shard|  shard.lock! }
+          yield
+        ensure
+          @shards.each { |shard|  shard.unlock! }
+          @logger.info("Nodes unlocked")
+        end
+      else
         yield
-      ensure
-        @shards.each { |shard|  shard.unlock! }
-        @logger.info("Nodes unlocked")
       end
     end
 
