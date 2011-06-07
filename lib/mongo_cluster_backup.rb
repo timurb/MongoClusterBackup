@@ -11,6 +11,9 @@ module MongoBackup
     #  nodes to backup
     attr_reader :nodes
 
+    #  general info about cluster setup
+    attr_reader :metadata
+
     def initialize(opts={})
       @opts = {
         :runner => BackupRunner::AbstractRunner,
@@ -18,6 +21,12 @@ module MongoBackup
         :sleep_period => 5,
         :logfile => STDOUT,
       }.merge(opts)
+
+      @metadata = {
+        :id => nil,
+        :config => [ @opts[:host], @opts[:config_port] ],
+        :shards => {}
+      }
 
       @logger = Logger.new( @opts[:logfile] )
       if @opts[:verbose]
@@ -34,6 +43,7 @@ module MongoBackup
         replica = Mongo::ReplSetConnection.new_from_string( shard["host"], :logger=>@logger )
         replica.passives.map do |host|
           host = host.split(':')
+          @metadata[:shards][shard["_id"]] = [ host[0], host[1].to_i ]
           Mongo::SafeConnection.new( host[0], host[1], :shard_name => shard["_id"] , :logger=>@logger )
         end                                       # map{}, not each{} here!!
       }.flatten
@@ -48,6 +58,7 @@ module MongoBackup
           wait_backup
         end
       end
+      @runner.save_metadata(@metadata)
     end
 
     def stop_balancer

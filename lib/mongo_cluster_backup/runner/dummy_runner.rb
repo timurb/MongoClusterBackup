@@ -10,6 +10,10 @@ module MongoBackup
       def update_waiting
         @waiting = []
       end
+
+      def save_metadata(metadata)
+        metadata[:id] = @backup_id
+      end
     end
   end
 end

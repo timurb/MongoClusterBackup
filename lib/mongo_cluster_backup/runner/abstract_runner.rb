@@ -37,6 +37,10 @@ module MongoBackup
       def backup_node(*args)
         raise "Procedure not implemented"
       end
+
+      def save_metadata(*args)
+        raise "Procedure not implemented"
+      end
     end
   end
 end
