@@ -34,6 +34,9 @@ Specific options:
     -d, --backup-dir DIR             A dir to place backups into
                                      (MongoBackupRunner only)
                                      Default: current dir
+        --[no-]lock                  Don't lock databases while getting dump/snapshot
+                                     Default: locking enabled
+
     -h, --help                       Show this message
         --version                    Show version  mongobackup [OPTION] mongos.address
 
@@ -49,9 +52,15 @@ Each replica in the shard should have on of the nodes with priority=0 set.
 The script connects to mongos router and obtains the list of used shards.
 Then it stops the balancer, finds all passive nodes and creates snapshots
 of those. After that it creates a snapshot of the config server.
+By default nodes are locked just after balancer is stopped.
 
 Standard MongoDump runner uses common mongodump command to dump all data from DB to
 timestamped dir under specified backup path. Each shard server into its own dir.
+A symlink named 'latest' is created to the latest backup made.
+
+Sometimes mongodumping the locked node causes hanging so it is advised to run
+mongobackup with --no-lock option.
+For details see (https://jira.mongodb.org/browse/SERVER-2278)
 
 
 === Backups restoration
@@ -64,15 +73,22 @@ common mongorestore command.
 
 === Backups rotation
 
-No backups rotation is done yet (TODO)
+No backups rotation is done and you have do it by hand.
+Something like running "find /path/to/backups -mtime +30 -delete" will do the job.
 
 
 === Adding your own runners
 
-If you want to add your own backup procedure MongoBackup::BackupRunner::AbstractRunner
-and redefine procedures backup_node and update_waiting 
+If you want to add your own backup procedure inherit 
+MongoBackup::BackupRunner::AbstractRunner and redefine procedures backup_node,
+update_waiting and save_metadata
 
 Mongo::Connection instance of node to backup is passed to backup_node().
 
 update_waiting is intended for running some kind of parallel backups (EC2 snapshotting
 etc) and should clean the already backupped nodes from @waiting var.
+
+save_metadata is passed a hash containing backup id, address of config server and
+addresses of all shards. It is up to you to do something with this or not.
+If you don't need to save metadata separately just override the function with
+empty proc.
